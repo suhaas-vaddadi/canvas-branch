@@ -2,33 +2,25 @@ import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
+import type { Course } from "./types";
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+  const [token, setToken] = useState("");
+  const [courses, setCourses] = useState<Course[] | null>(null);
+  const [error, setError] = useState<string>("No error");
 
   async function greet() {
     // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
+    try {
+      setCourses(JSON.parse(await invoke("test_rest", { token })));
+    } catch (error) {
+      const err = error as Error;
+      setError(err.message);
+    }
   }
 
   return (
     <main className="container">
-      <h1>Welcome to Tauri + React</h1>
-
-      <div className="row">
-        <a href="https://vite.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
       <form
         className="row"
         onSubmit={(e) => {
@@ -38,12 +30,13 @@ function App() {
       >
         <input
           id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
+          onChange={(e) => setToken(e.currentTarget.value)}
+          placeholder="Paste Your Token"
         />
-        <button type="submit">Greet</button>
+        <button type="submit">Fetch Courses</button>
       </form>
-      <p>{greetMsg}</p>
+      {courses && courses?.map((course) => <p> {course.name} </p>)}
+      {error && <p>{error}</p>}
     </main>
   );
 }
