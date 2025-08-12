@@ -1,21 +1,27 @@
 use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION};
+mod auth;
+use auth::check_user;
+use auth::save_user;
+use reqwest::Client;
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 
 #[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
+async fn fetch_courses(token: &str) -> Result<String, String> {
+    let mut password = check_user();
 
-#[tauri::command]
-async fn test_rest(token: &str) -> Result<String, String> {
+    if &password == "false"{
+        password = token.to_string();
+        let _ = save_user(&token);
+    }
+
+
     let mut headers = HeaderMap::new();
-    let auth_value = format!("Bearer {}", token);
+    let auth_value = format!("Bearer {}", &password);
     let head = HeaderValue::from_str(&auth_value).unwrap();
 
     headers.insert(AUTHORIZATION, head);
-
-    let client = reqwest::Client::new();
-    let resp = client
+    
+    let resp = Client::new()
         .get("https://canvas.instructure.com/api/v1/courses")
         .headers(headers)
         .send()
@@ -32,7 +38,7 @@ async fn test_rest(token: &str) -> Result<String, String> {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet, test_rest])
+        .invoke_handler(tauri::generate_handler![fetch_courses, check_user, save_user])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
