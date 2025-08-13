@@ -1,5 +1,6 @@
 use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION};
 mod auth;
+use auth::delete_key;
 use auth::check_user;
 use auth::save_user;
 use reqwest::Client;
@@ -38,7 +39,7 @@ async fn fetch_courses(token: &str) -> Result<String, String> {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![fetch_courses, check_user, save_user])
+        .invoke_handler(tauri::generate_handler![fetch_courses, check_user, save_user, delete_key])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

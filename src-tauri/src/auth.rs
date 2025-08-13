@@ -15,12 +15,22 @@ pub fn check_user() -> String {
 
 
 #[tauri::command]
-pub fn save_user(key: &str) -> Result<bool, bool>{
+pub fn save_user(key: &str) -> Result<(), ()>{
     if let Ok(entry) = Entry::new(&SERVICE, &USERNAME){
         if let Ok(_) = entry.set_password(key){
-            return Ok(true); 
+            return Ok(()); 
         }
     }
-    return Err(false);
+    return Err(());
+}
+
+#[tauri::command]
+pub fn delete_key() -> Result<(), ()>{
+    if let Ok(entry) = Entry::new(&SERVICE, &USERNAME){
+        if let Ok(_) = entry.delete_credential(){
+            return Ok(());
+        }
+    }
+    return Err(());
 }
 

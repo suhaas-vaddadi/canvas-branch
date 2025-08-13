@@ -3,31 +3,21 @@ import settings from "../assets/settings_demo.png";
 import integration from "../assets/integration_demo.png";
 import accessToken from "../assets/access_token_demo.png";
 import accessTokenCopy from "../assets/copy_access_token_demo.png";
-import { invoke } from "@tauri-apps/api/core";
 import { useNavigate } from "react-router";
+import { invoke } from "@tauri-apps/api/core";
 
 export default function HomePage() {
   const [apiKey, setApiKey] = useState<string>("");
   const [showKey, setShowKey] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    async function check_user() {
-      const str: string = await invoke("check_user", {});
-      if (str != "false") {
-        navigate("/dashboard");
-      }
-    }
-    check_user();
-  }, []);
-
-  // async function saveKey() {
-  //   await invoke("save_user", { key: apiKey.trim() });
-  //   navigate("/dashboard");
-  // }
+  async function saveKey() {
+    await invoke("save_user", { key: apiKey.trim() });
+    navigate("/dashboard");
+  }
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-neutral-950 text-neutral-100">
+    <div className="relative min-h-screen w-full overflow-hidden text-neutral-100">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-40 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-cyan-500/10 blur-3xl" />
         <div className="absolute bottom-0 right-0 h-80 w-80 translate-x-1/3 translate-y-1/3 rounded-full bg-fuchsia-500/5 blur-3xl" />
@@ -164,7 +154,7 @@ export default function HomePage() {
           <div className="mt-4 space-y-3">
             <div className="flex items-center gap-3">
               <input
-                type={showKey ? "text" : "password"}
+                type={"password"}
                 value={apiKey}
                 onChange={(e) => setApiKey(e.currentTarget.value)}
                 placeholder="Paste your Canvas API token"
@@ -172,10 +162,10 @@ export default function HomePage() {
               />
               <button
                 type="button"
-                onClick={() => setShowKey((s) => !s)}
-                className="rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs text-neutral-300 hover:border-cyan-400 hover:text-white"
+                onClick={() => saveKey()}
+                className="bg-cyan-500 border px-3 py-2 text-xs text-neutral-300 hover:border-cyan-400"
               >
-                {showKey ? "Hide" : "Show"}
+                {`Submit`}
               </button>
             </div>
           </div>
