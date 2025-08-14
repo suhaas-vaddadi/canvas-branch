@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import settings from "../assets/settings_demo.png";
 import integration from "../assets/integration_demo.png";
 import accessToken from "../assets/access_token_demo.png";
@@ -8,7 +8,6 @@ import { invoke } from "@tauri-apps/api/core";
 
 export default function HomePage() {
   const [apiKey, setApiKey] = useState<string>("");
-  const [showKey, setShowKey] = useState<boolean>(false);
   const navigate = useNavigate();
 
   async function saveKey() {

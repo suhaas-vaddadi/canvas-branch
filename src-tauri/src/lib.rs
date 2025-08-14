@@ -1,37 +1,11 @@
-use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION};
-mod auth;
+pub mod auth;
 use auth::delete_key;
 use auth::check_user;
 use auth::save_user;
-use reqwest::Client;
+pub mod courses;
+use courses::fetch_courses;
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 
-#[tauri::command]
-async fn fetch_courses(token: &str) -> Result<String, String> {
-    let mut password = check_user();
-
-    if &password == "false"{
-        password = token.to_string();
-        let _ = save_user(&token);
-    }
-
-
-    let mut headers = HeaderMap::new();
-    let auth_value = format!("Bearer {}", &password);
-    let head = HeaderValue::from_str(&auth_value).unwrap();
-
-    headers.insert(AUTHORIZATION, head);
-    
-    let resp = Client::new()
-        .get("https://canvas.instructure.com/api/v1/courses")
-        .headers(headers)
-        .send()
-        .await.unwrap();
-
-    let json_body: serde_json::Value = resp.json().await.unwrap();
-
-    Ok(serde_json::to_string_pretty(&json_body).unwrap())
-}
 
 
 
